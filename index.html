@@ -1,0 +1,159 @@
+      {
+        q: "Apa makanan yang paling bisa memperbaiki mood Dea?",
+        options: [
+          "Bakso",
+          "Waffle",
+          "Seblak",
+          "Mie ayam"
+        ],
+        answer: 1
+      },
+      {
+        q: "Apa hal yang paling Dea hargai dari seseorang yang dekat dengannya?",
+        options: [
+          "Hadiah mahal",
+          "Pujian setiap hari",
+          "Keberadaannya",
+          "Uang"
+        ],
+        answer: 2
+      }
+    ];
+
+    let currentQuestion = 0;
+    let userAnswers = Array(questions.length).fill(null);
+
+    function startQuiz() {
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("resultScreen").classList.add("hidden");
+      document.getElementById("quizScreen").classList.remove("hidden");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+
+      document.getElementById("questionNumber").textContent =
+        `Soal ${currentQuestion + 1} dari ${questions.length}`;
+
+      document.getElementById("answeredCount").textContent =
+        `Terjawab: ${userAnswers.filter(a => a !== null).length}/${questions.length}`;
+
+      document.getElementById("progressBar").style.width =
+        `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+      document.getElementById("questionText").textContent = q.q;
+
+      const optionsContainer = document.getElementById("options");
+      optionsContainer.innerHTML = "";
+
+      q.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.innerHTML =
+          `<span class="letter">${String.fromCharCode(65 + index)}</span>`;
+
+        const text = document.createElement("span");
+        text.textContent = option;
+        button.appendChild(text);
+
+        if (userAnswers[currentQuestion] === index) {
+          button.classList.add("selected");
+        }
+
+        button.onclick = () => {
+          userAnswers[currentQuestion] = index;
+          renderQuestion();
+        };
+
+        optionsContainer.appendChild(button);
+      });
+
+      document.getElementById("backButton").disabled =
+        currentQuestion === 0;
+
+      document.getElementById("nextButton").disabled =
+        userAnswers[currentQuestion] === null;
+
+      document.getElementById("nextButton").textContent =
+        currentQuestion === questions.length - 1
+          ? "Lihat Hasil 💖"
+          : "Berikutnya →";
+    }
+
+    function previousQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      if (userAnswers[currentQuestion] === null) return;
+
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      const score = questions.reduce((total, question, index) => {
+        return total + (userAnswers[index] === question.answer ? 1 : 0);
+      }, 0);
+
+      const percentage = Math.round((score / questions.length) * 100);
+
+      let emoji, title, message;
+
+      if (score >= 23) {
+        emoji = "👑💗";
+        title = "Bestie Paling Mengenal Dea!";
+        message = "Wihhh, kamu kenal Dea banget! Jangan-jangan kamu punya buku panduan khusus tentang Dea, ya? 🤭💕";
+      } else if (score >= 18) {
+        emoji = "🥰✨";
+        title = "Orang Dekat Dea!";
+        message = "Kamu udah tahu banyak tentang Dea. Tinggal sedikit lagi jadi ahli Dea nih! 💖";
+      } else if (score >= 12) {
+        emoji = "🤔🎀";
+        title = "Lumayan Kenal Dea!";
+        message = "Kamu tahu beberapa hal tentang Dea, tapi masih ada rahasia yang belum kamu ketahui. Ayo lebih kenal lagi! 😝";
+      } else if (score >= 6) {
+        emoji = "😂💞";
+        title = "Kenal, Tapi Kok Gitu?";
+        message = "Kamu kenal Dea, tapi kayaknya masih perlu banyak ngobrol deh. Jangan cuma tahu namanya aja! 🤣";
+      } else {
+        emoji = "😭💔";
+        title = "Siapa Dea? WKWK!";
+        message = "Aduhhh, kamu kayaknya harus kenalan ulang sama Dea. Jangan menyerah, coba main lagi! 😂💕";
+      }
+
+      document.getElementById("quizScreen").classList.add("hidden");
+      document.getElementById("resultScreen").classList.remove("hidden");
+
+      document.getElementById("resultEmoji").textContent = emoji;
+      document.getElementById("resultTitle").textContent = title;
+      document.getElementById("resultIntro").textContent =
+        "Ini hasil akhir kamu!";
+
+      document.getElementById("scoreText").textContent =
+        `${score}/${questions.length}`;
+
+      document.getElementById("percentageText").textContent =
+        `${percentage}%`;
+
+      document.getElementById("resultMessage").textContent = message;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      userAnswers = Array(questions.length).fill(null);
+
+      document.getElementById("resultScreen").classList.add("hidden");
+      document.getElementById("startScreen").classList.remove("hidden");
+    }
+  </script>
+</body>
+             </html>
